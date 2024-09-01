@@ -1,4 +1,4 @@
-
+import { Schema } from 'mongoose'
 export interface RNextCollection {
     _id: string;
     name: string;
@@ -9,24 +9,26 @@ export interface RNextCollection {
 export interface RNextCollectionSchema {
     _id: string;
     key: string;
-    type: RNextCollectionSchemaType;
+    type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'array' | 'geo' | 'file' | 'reference' | 'relation' | 'enum' | 'json';
     required: boolean;
     unique: boolean;
     default: Record<string, any> | number | string | boolean | null;
-    // ref: Ref; mongoDB Document reference
+    ref?: Document | null;
+    select: boolean;
 }
 
-export enum RNextCollectionSchemaType {
-    STRING = 'string',
-    NUMBER = 'number',
-    BOOLEAN = 'boolean',
-    DATE = 'date',
-    OBJECT = 'object',
-    ARRAY = 'array',
-    GEO = 'geo',
-    FILE = 'file',
-    REFERENCE = 'reference',
-    RELATION = 'relation',
-    ENUM = 'enum',
-    JSON = 'json'
-}
+export const rNextTypeMapping: Record<string, any> = {
+    string: String,
+    number: Number,
+    boolean: Boolean,
+    date: Date,
+    object: Schema.Types.Mixed,
+    array: [Schema.Types.Mixed],
+    //geo: Schema.Types.Point, // For geo types, use a suitable type if needed
+    file: Schema.Types.Mixed, 
+    reference: Schema.Types.ObjectId,
+    relation: Schema.Types.Mixed, 
+    enum: String, 
+    json: Schema.Types.Mixed
+};
+
