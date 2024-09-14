@@ -7,7 +7,6 @@ export interface RNextCollection {
 }
 
 export interface RNextCollectionSchema {
-    _id: string;
     key: string;
     type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'array' | 'geo' | 'file' | 'reference' | 'relation' | 'enum' | 'json';
     required: boolean;
@@ -24,7 +23,6 @@ export const rNextTypeMapping: Record<string, any> = {
     date: Date,
     object: Schema.Types.Mixed,
     array: [Schema.Types.Mixed],
-    //geo: Schema.Types.Point, // For geo types, use a suitable type if needed
     file: Schema.Types.Mixed, 
     reference: Schema.Types.ObjectId,
     relation: Schema.Types.Mixed, 

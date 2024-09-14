@@ -3,7 +3,7 @@ import type { RNextConfig } from './types/app.types';
 
 const config: RNextConfig = {
     dbName: 'cms_app',
-    directory: './cms',
+    directory: './rnext',
     port: 1337,
     route: '/cms',
 };
