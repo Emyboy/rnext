@@ -14,7 +14,7 @@ async function startApp() {
     try {
         await rNextApp.initialize();
         await rNextApp.start();
-        console.log('RNext CMS has started successfully');
+        console.log('rNext is ready!!');
     } catch (error) {
         console.error('Failed to start RNext CMS:', error);
         process.exit(1);

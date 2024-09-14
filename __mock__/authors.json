@@ -1,0 +1,39 @@
+{
+    "_id": "64bdf5a95d6a3c3efbb29c0e",
+    "name": "authors",
+    "slug": "authors",
+    "schema": [
+        {
+            "key": "name",
+            "type": "string",
+            "required": true,
+            "unique": false,
+            "default": "",
+            "select": true
+        },
+        {
+            "key": "birthdate",
+            "type": "date",
+            "required": true,
+            "unique": false,
+            "default": null,
+            "select": true
+        },
+        {
+            "key": "nationality",
+            "type": "string",
+            "required": true,
+            "unique": false,
+            "default": "",
+            "select": true
+        },
+        {
+            "key": "biography",
+            "type": "string",
+            "required": true,
+            "unique": false,
+            "default": "",
+            "select": true
+        }
+    ]
+}

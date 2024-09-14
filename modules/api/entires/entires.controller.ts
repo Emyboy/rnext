@@ -1,9 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
-import mongoose, { Schema } from 'mongoose';
 import fs from 'fs/promises';
 import path from 'path';
-import { rNextTypeMapping, type RNextCollectionSchema } from "../../../types/collection.types";
-import { getModelForCollection } from "../../../utils/collection.utils";
+import { getModelForCollection, getModel } from "../../../utils/collection.utils";
+import { db } from "../../../config/db.config";
 
 const entriesController = {
     find: async (req: Request, res: Response, next: NextFunction) => {
@@ -11,24 +10,40 @@ const entriesController = {
             const collectionName = req.params.collection_name;
             const populateFields = req.query.populate ? (req.query.populate as string).split(',') : [];
             const limit = parseInt(req.query.limit as string) || 10;
+            const page = parseInt(req.query.page as string) || 1;
+            const skip = (page - 1) * limit;
 
-            const modelDef = await getModelForCollection(collectionName);
-
-            if(!modelDef) {
-                return res.status(404).json({ message: `Collection '${collectionName}' not found.` });
+            if (!db.connection) {
+                throw new Error('Database connection not established');
             }
 
-            const query = modelDef.find().limit(limit);
+            const Model = getModel(collectionName);
 
-            if (populateFields.length > 0) {
-                populateFields.forEach(field => {
-                    query.populate(field);
-                });
+            if (!Model) {
+                return res.status(404).json({ error: `Collection '${collectionName}' not found` });
             }
 
-            const entries = await query.exec();
+            let query = Model.find();
 
-            res.status(200).json({ collection: collectionName, entries });
+            populateFields.forEach(field => {
+                query = query.populate(field.toLocaleLowerCase().trim(), { strictPopulate: false });
+            });
+
+            query = query.skip(skip).limit(limit);
+
+            const results = await query.exec();
+
+            const totalCount = await Model.countDocuments();
+
+            res.status(200).json({
+                data: results,
+                pagination: {
+                    currentPage: page,
+                    totalPages: Math.ceil(totalCount / limit),
+                    totalItems: totalCount,
+                    itemsPerPage: limit
+                }
+            });
         } catch (err) {
             console.error('Error fetching entries:', err);
             next(err);
