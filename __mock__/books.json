@@ -1,0 +1,40 @@
+{
+    "name": "books",
+    "slug": "books",
+    "_id": "64bdf5a95d6a3c3efbb29c13",
+    "schema": [
+        {
+            "key": "title",
+            "type": "string",
+            "required": true,
+            "unique": false,
+            "default": "",
+            "select": true
+        },
+        {
+            "key": "publishedDate",
+            "type": "date",
+            "required": true,
+            "unique": false,
+            "default": null,
+            "select": true
+        },
+        {
+            "key": "genre",
+            "type": "string",
+            "required": true,
+            "unique": false,
+            "default": "",
+            "select": true
+        },
+        {
+            "key": "authors",
+            "type": "reference",
+            "required": true,
+            "unique": false,
+            "default": null,
+            "select": true,
+            "ref": "authors"
+        }
+    ]
+}
