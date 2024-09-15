@@ -22,7 +22,7 @@ import path from 'path';
 import type { RNextConfig } from '../types/app.types';
 import { createCMSDirectory } from '../utils/app.utils';
 import apiRoutes from '../modules/api/api.routes';
-import { db } from '../config/db.config';
+import { rNextDB } from '../config/db.config';
 import fs from 'fs/promises'
 import type { RNextCollection } from '../types/collection.types';
 import { syncCollectionSchema } from '../utils/collection.utils';
@@ -56,7 +56,7 @@ export class RNextApp {
     }
 
     private async initializeDatabase(): Promise<void> {
-        await db.connect(this.dbUri);
+        await rNextDB.connect(this.dbUri);
         await this.syncSchemas();
     }
 
@@ -83,7 +83,7 @@ export class RNextApp {
                     const collection: RNextCollection = JSON.parse(schemaContent);
 
                     await syncCollectionSchema(collection);
-                    console.log(`✅ Synced schema for collection: ${collectionName}`);
+                    // console.log(`✅ Synced schema for collection: ${collectionName}`);
                 } catch (error) {
                     console.error(`Error syncing schema for collection ${collectionName}:`, error);
                 }
@@ -102,7 +102,7 @@ export class RNextApp {
 
     public start(): Promise<void> {
         return new Promise((resolve, reject) => {
-            if (!db.connection) {
+            if (!rNextDB.connection) {
                 reject(new Error('Database connection not established. Call initialize() first.'));
                 return;
             }

@@ -33,4 +33,4 @@ class Database {
     }
 }
 
-export const db = Database.getInstance();
+export const rNextDB = Database.getInstance();

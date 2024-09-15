@@ -11,7 +11,7 @@ const collectionController = {
 
             const cmsDirectory = process.env.CMS_DIRECTORY as string;
             const collectionsDir = path.join(cmsDirectory, 'collections');
-            const collectionDir = path.join(collectionsDir, collection.name.toLowerCase().trim());
+            const collectionDir = path.join(collectionsDir, collection.slug.toLowerCase().trim());
 
             await fs.mkdir(collectionsDir, { recursive: true });
             await fs.mkdir(collectionDir, { recursive: true });
@@ -21,8 +21,8 @@ const collectionController = {
 
             await syncCollectionSchema(collection);
 
-            console.log(`➡️  Created '${collection.name}' collection`);
-            res.status(200).send(`Collection '${collection.name}' created successfully`);
+            console.log(`➡️  Created '${collection.slug}' collection`);
+            res.status(200).send(`Collection '${collection.slug}' created successfully`);
         } catch (error) {
             console.error('Error creating collection:', error);
             return next(error);

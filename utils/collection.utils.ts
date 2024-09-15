@@ -1,59 +1,14 @@
-import mongoose, { model, Schema } from 'mongoose';
-import path from 'path';
-import fs from 'fs/promises';
+import { Model, model, Schema } from 'mongoose';
 import { rNextTypeMapping, type RNextCollection, type RNextCollectionSchema } from '../types/collection.types';
-import { db } from '../config/db.config';
+import { rNextDB } from '../config/db.config';
 
 
-const schemaRegistry = new Map<string, mongoose.Model<any>>();
-
-export const getModelForCollection = async (collectionName: string) => {
-    if (schemaRegistry.has(collectionName)) {
-        return schemaRegistry.get(collectionName);
-    }
-
-    const cmsDirectory = process.env.CMS_DIRECTORY as string;
-    const schemaFilePath = path.join(cmsDirectory, 'collections', collectionName, 'schema.json');
-
-    try {
-        await fs.access(schemaFilePath);
-    } catch (err) {
-        throw new Error(`Schema file for collection '${collectionName}' not found.`);
-    }
-
-    const schemaData = await fs.readFile(schemaFilePath, 'utf-8');
-    const collectionSchema = JSON.parse(schemaData);
-
-    const schemaDef = new mongoose.Schema(
-        {
-            ...collectionSchema.schema.reduce((acc: any, schema: RNextCollectionSchema) => {
-                acc[schema.key] = {
-                    ...schema,
-                    type: rNextTypeMapping[schema.type] || mongoose.Schema.Types.Mixed,
-                    required: schema.required,
-                    unique: schema.unique,
-                    default: schema.default,
-                };
-                return acc;
-            }, {}),
-        },
-        {
-            timestamps: true
-        }
-    );
-
-    const modelDef = mongoose.models[collectionName] || mongoose.model(collectionName, schemaDef);
-    schemaRegistry.set(collectionName, modelDef);
-
-    return modelDef;
-};
-
-export function getModel(collectionName: string) {
+export function getModel(collectionName: string): Model<any> {
     return model(collectionName.toLocaleLowerCase().trim());
 }
 
 export async function syncCollectionSchema(collection: RNextCollection) {
-    if (!db.connection) {
+    if (!rNextDB.connection) {
         throw new Error('Database connection not established');
     }
 
@@ -61,6 +16,7 @@ export async function syncCollectionSchema(collection: RNextCollection) {
 
     collection.schema.forEach((field: RNextCollectionSchema) => {
         const schemaField: any = {
+            ...field,
             type: rNextTypeMapping[field.type],
             required: field.required,
             unique: field.unique,
@@ -77,11 +33,11 @@ export async function syncCollectionSchema(collection: RNextCollection) {
 
     const schema = new Schema(schemaDefinition, { timestamps: true });
     // const ModelName = `${collection.name.charAt(0).toUpperCase() + collection.name.slice(1)}`;
-    const ModelName = collection.name.toLowerCase().trim()
+    const ModelName = collection.slug.toLowerCase().trim()
 
     try {
-        if (db.connection.models[ModelName]) {
-            db.connection.models[ModelName].schema = schema;
+        if (rNextDB.connection.models[ModelName]) {
+            rNextDB.connection.models[ModelName].schema = schema;
         } else {
             model(ModelName, schema);
         }
