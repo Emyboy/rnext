@@ -9,12 +9,30 @@ export interface RNextCollection {
 export interface RNextCollectionSchema {
     key: string;
     type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'array' | 'geo' | 'file' | 'reference' | 'relation' | 'enum' | 'json';
-    required: boolean;
+    required: boolean | [boolean, string]; 
     unique: boolean;
-    default: Record<string, any> | number | string | boolean | null;
-    ref?: Document | null;
+    default?: Record<string, any> | number | string | boolean | null | (() => any);
+    ref?: string;
     select: boolean;
+    index: boolean;
+    sparse?: boolean;
+    min?: number | Date;
+    max?: number | Date;
+    minlength?: number;
+    maxlength?: number;
+    match?: RegExp;
+    enum?: string[];
+    validate?: (value: any) => boolean | Promise<boolean>;
+    immutable?: boolean;
+    get?: (value: any) => any; // Custom getter and setter functions to manipulate 
+    set?: (value: any) => any; //  values when retrieving and saving data.
+    alias?: string;
+    lowercase?: boolean;
+    uppercase?: boolean;
+    trim?: boolean;
+    expires?: number | string; // when the document expires
 }
+
 
 export const rNextTypeMapping: Record<string, any> = {
     string: String,

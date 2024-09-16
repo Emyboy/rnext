@@ -26,6 +26,7 @@ import { rNextDB } from '../config/db.config';
 import fs from 'fs/promises'
 import type { RNextCollection } from '../types/collection.types';
 import { syncCollectionSchema } from '../utils/collection.utils';
+import adminRoutes from '../modules/admin/admin.routes';
 
 export class RNextApp {
     private route: string;
@@ -67,6 +68,7 @@ export class RNextApp {
 
     private initializeRoutes(): void {
         this.app.use('/api', apiRoutes);
+        this.app.use('/admin', adminRoutes);
     }
 
     private async syncSchemas(): Promise<void> {
